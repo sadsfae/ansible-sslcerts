@@ -7,7 +7,19 @@ Simple Ansible playbook to replace Apache and Nginx SSL certificates for EL-base
   - e.g. `host-01.pem` (certificate) and `host-01.key` (certificate key)
 * This then restarts each respective webserver type you are using.
 
+## Apache and Nginx Files Locations
+
+| SSL Component | File System Path                    |
+| --------------|-------------------------------------|
+| Apache Cert   | /etc/pki/tls/private/servername.pem |
+| Apache Key    | /etc/pki/tls/private/servername.key |
+| Nginx Cert    | /etc/pki/tls/private/servername.pem |
+| Nginx Key     | /etc/pki/tls/certs/servername.key |
+
+* You can change this to your liking in `install/group_vars/all.yml`
+
 ## How to Use
+#### Edit Hosts File
 * Edit the `hosts` inventory as follows, depending on nginx or Apache
 
 ```
@@ -17,7 +29,7 @@ host-01
 [nginx]
 host-02
 ```
-
+#### Generate New Certificates
 * Generate certificates and keys via your preferred method and name them appropriately.
 
 ```
@@ -27,6 +39,8 @@ install/roles/sslcerts/files
 ├── host-02.key
 └── host-02.pem
 ```
+
+#### Run the Playbook
 
 * Run the playbook:
 ```
