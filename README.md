@@ -1,8 +1,9 @@
 # ansible-sslcerts
-Simple Ansible playbook to replace SSL certificates for EL-based systems.
+Simple Ansible playbook to replace Apache and Nginx SSL certificates for EL-based systems.
 
 * This takes SSL certificates and keys copied into `install/roles/sslcerts/files` and copies them to servers that match their name.
   - e.g. `host-01.pem` (certificate) and `host-01.key` (certificate key)
+* This then restarts each respective webserver type you are using.
 
 ## How to Use
 * Edit the `hosts` inventory as follows, depending on nginx or Apache
