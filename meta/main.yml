@@ -1,0 +1,21 @@
+galaxy_info:
+  author: Will Foster (@sadsfae)
+  role_name: ansible_sslkeys
+  namespace: sadsfae
+  description: Simple playbook for copying SSL certificates/keys to remote webservers.
+  issue_tracker_url: https://github.com/sadsfae/ansible-sslcerts/issues
+  license: GPL
+  min_ansible_version: 2.7
+  platforms:
+  - name: Fedora
+    versions:
+    - all
+  - name: EL
+    versions:
+      - 8
+      - 9
+  galaxy_tags:
+    - SSL
+    - PKI
+    - TLS
+dependencies: []
