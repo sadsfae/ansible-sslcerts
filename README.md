@@ -11,10 +11,10 @@ Simple Ansible playbook to replace Apache and Nginx SSL certificates
 
 | SSL Component | File System Path                    |
 | --------------|-------------------------------------|
-| Apache Cert   | /etc/pki/tls/private/servername.pem |
+| Apache Cert   | /etc/pki/tls/certs/servername.pem   |
 | Apache Key    | /etc/pki/tls/private/servername.key |
-| Nginx Cert    | /etc/pki/tls/private/servername.pem |
-| Nginx Key     | /etc/pki/tls/certs/servername.key |
+| Nginx Cert    | /etc/pki/tls/certs/servername.pem   |
+| Nginx Key     | /etc/pki/tls/certs/servername.key   |
 
 * You can change this to your liking in `install/group_vars/all.yml`
 
