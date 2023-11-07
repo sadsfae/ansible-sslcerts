@@ -1,5 +1,5 @@
 # ansible-sslcerts
-Simple Ansible playbook to replace Apache and Nginx SSL certificates for EL-based systems.
+Simple Ansible playbook to replace Apache and Nginx SSL certificates
 
 [![GA](https://github.com/sadsfae/ansible-sslcerts/actions/workflows/ansible-lint.yml/badge.svg)](https://github.com/sadsfae/ansible-sslcerts/actions)
 
