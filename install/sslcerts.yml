@@ -1,0 +1,10 @@
+---
+#
+# Ansible playbook to manage updating SSL certificates
+# for Apache and Nginx on EL systems
+#
+
+- hosts: all
+  remote_user: root
+  roles:
+    - {role: sslcerts}

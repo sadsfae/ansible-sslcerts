@@ -1,0 +1,7 @@
+---
+# global variables here
+#
+nginx_cert_path: /etc/pki/tls/certs/server.pem
+nginx_key_path: /etc/pki/tls/certs/server.key
+apache_cert_path: /etc/pki/tls/private/server.crt
+apache_key_path: /etc/pki/tls/private/server.key
