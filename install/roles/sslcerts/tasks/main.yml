@@ -4,10 +4,11 @@
   set_fact:
     www_hostname: "{{ ansible_hostname }}"
 
+# Apache Webserver
 - name: Replacing Apache Certificates
   ansible.builtin.copy:
     src: "{{ www_hostname }}.pem"
-    dest: /etc/pki/tls/certs
+    dest: "{{ apache_cert_path }}"
     owner: root
     group: root
     backup: true
@@ -17,7 +18,7 @@
 - name: Replacing Apache Keys
   ansible.builtin.copy:
     src: "{{ www_hostname }}.key"
-    dest: /etc/pki/tls/private
+    dest: "{{ apache_key_path }}"
     owner: root
     group: root
     backup: true
@@ -25,10 +26,11 @@
   notify: Reload Apache
   when: "'apache' in group_names"
 
+# Nginx Webserver
 - name: Replacing Nginx Certificates
   ansible.builtin.copy:
     src: "{{ www_hostname }}.pem"
-    dest: /etc/pki/tls/certs
+    dest: "{{ nginx_cert_path }}"
     owner: root
     group: root
     backup: true
@@ -38,7 +40,7 @@
 - name: Replacing Nginx Keys
   ansible.builtin.copy:
     src: "{{ www_hostname }}.key"
-    dest: /etc/pki/tls/certs
+    dest: "{{ nginx_key_path }}"
     owner: root
     group: root
     backup: true
