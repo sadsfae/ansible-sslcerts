@@ -4,7 +4,8 @@
 # for Apache and Nginx on EL systems
 #
 
-- hosts: all
+- name: Update Webserver SSL Certificates
+  hosts: all
   remote_user: root
   roles:
     - {role: sslcerts}

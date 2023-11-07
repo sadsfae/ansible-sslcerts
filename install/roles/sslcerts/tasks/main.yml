@@ -1,7 +1,8 @@
 ---
 # set fact for ansible_hostname
-- set_fact:
-    www_hostname: "{{ansible_hostname}}"
+- name: Set FQDN Custom Facts
+  set_fact:
+    www_hostname: "{{ ansible_hostname }}"
 
 - name: Replacing Apache Certificates
   ansible.builtin.copy:
@@ -9,7 +10,8 @@
     dest: /etc/pki/tls/certs
     owner: root
     group: root
-    backup: yes
+    backup: true
+    mode: '0600'
   with_items:
     - "{{ www_hostname }}.pem"
   loop: "{{ query('inventory_hostnames', 'apache') }}"
@@ -21,7 +23,8 @@
     dest: /etc/pki/tls/private
     owner: root
     group: root
-    backup: yes
+    backup: true
+    mode: '0600'
   with_items:
     - "{{ www_hostname }}.key"
   loop: "{{ query('inventory_hostnames', 'apache') }}"
@@ -34,7 +37,8 @@
     dest: /etc/pki/tls/certs
     owner: root
     group: root
-    backup: yes
+    backup: true
+    mode: '0600'
   with_items:
     - "{{ www_hostname }}.pem"
   loop: "{{ query('inventory_hostnames', 'nginx') }}"
@@ -46,7 +50,8 @@
     dest: /etc/pki/tls/certs
     owner: root
     group: root
-    backup: yes
+    backup: true
+    mode: '0600'
   with_items:
     - "{{ www_hostname }}.key"
   loop: "{{ query('inventory_hostnames', 'nginx') }}"
