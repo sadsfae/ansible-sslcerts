@@ -6,54 +6,42 @@
 
 - name: Replacing Apache Certificates
   ansible.builtin.copy:
-    src: "{{ item }}.pem"
+    src: "{{ www_hostname }}.pem"
     dest: /etc/pki/tls/certs
     owner: root
     group: root
     backup: true
     mode: '0600'
-  with_items:
-    - "{{ www_hostname }}.pem"
-  loop: "{{ query('inventory_hostnames', 'apache') }}"
   when: "'apache' in group_names"
 
 - name: Replacing Apache Keys
   ansible.builtin.copy:
-    src: "{{ item }}.key"
+    src: "{{ www_hostname }}.key"
     dest: /etc/pki/tls/private
     owner: root
     group: root
     backup: true
     mode: '0600'
-  with_items:
-    - "{{ www_hostname }}.key"
-  loop: "{{ query('inventory_hostnames', 'apache') }}"
   notify: Reload Apache
   when: "'apache' in group_names"
 
 - name: Replacing Nginx Certificates
   ansible.builtin.copy:
-    src: "{{ item }}.pem"
+    src: "{{ www_hostname }}.pem"
     dest: /etc/pki/tls/certs
     owner: root
     group: root
     backup: true
     mode: '0600'
-  with_items:
-    - "{{ www_hostname }}.pem"
-  loop: "{{ query('inventory_hostnames', 'nginx') }}"
   when: "'nginx' in group_names"
 
 - name: Replacing Nginx Keys
   ansible.builtin.copy:
-    src: "{{ item }}.key"
+    src: "{{ www_hostname }}.key"
     dest: /etc/pki/tls/certs
     owner: root
     group: root
     backup: true
     mode: '0600'
-  with_items:
-    - "{{ www_hostname }}.key"
-  loop: "{{ query('inventory_hostnames', 'nginx') }}"
   notify: Reload Nginx
   when: "'nginx' in group_names"
