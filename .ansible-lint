@@ -1,0 +1,14 @@
+warn_list:
+  - command-instead-of-module
+  - no-changed-when
+  - var-spacing
+  - ignore-errors
+  - risky-file-permissions
+  - deprecated-local-action
+  - no-free-form
+  - var-naming
+  - fqcn
+  - name[play]
+
+skip_list:
+  - fqcn-builtins
