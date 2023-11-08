@@ -2,7 +2,7 @@
 # set fact for ansible_hostname
 - name: Set FQDN Custom Facts
   set_fact:
-    www_hostname: "{{ ansible_hostname }}"
+    www_hostname: "{{ ansible_fqdn }}"
 
 # Apache Webserver
 - name: Replacing Apache Certificates
