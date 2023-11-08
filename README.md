@@ -56,4 +56,5 @@ openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 3
 ```
 
 ### To Do
-* Inspect the local certificates to make sure they match the domain
+* Consider using Ansible Vault to store/manage certificate files
+* Inspect the local certificates to make sure they match the target domains
