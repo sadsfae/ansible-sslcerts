@@ -52,7 +52,9 @@ ansible-playbook -i hosts install/sslcerts.yml
 * You can easily generate your own TLS certificate/key with one command for testing:
 
 ```
-openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=CommonNameOrHostname"
+servername=$(hostname)
+mkdir -p /etc/pki/tls/certs ; cd /etc/pki/tls/certs
+openssl req -x509 -newkey rsa:4096 -keyout $servername.key -out $servername.pem -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=CommonNameOrHostname"
 ```
 
 ### To Do
