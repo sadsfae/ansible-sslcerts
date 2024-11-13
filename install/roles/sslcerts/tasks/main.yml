@@ -23,7 +23,9 @@
     group: root
     backup: true
     mode: '0600'
-  notify: Reload Apache
+  notify:
+    - Reload Apache
+    - Reload ApacheSysV
   when: "'apache' in group_names"
 
 # Nginx Webserver
@@ -45,5 +47,7 @@
     group: root
     backup: true
     mode: '0600'
-  notify: Reload Nginx
+  notify:
+    - Reload Nginx
+    - Reload NginxSysV
   when: "'nginx' in group_names"
