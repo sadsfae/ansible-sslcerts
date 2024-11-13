@@ -3,8 +3,22 @@
   ansible.builtin.service:
     name: nginx
     state: restarted
+  when: (ansible_facts['os_family'] == "RedHat") or
+        (ansible_facts['os_family'] == "Debian")
 
 - name: Reload Apache
   ansible.builtin.service:
     name: httpd
     state: restarted
+  when: (ansible_facts['os_family'] == "RedHat") or
+        (ansible_facts['os_family'] == "Debian")
+
+- name: Reload NginxSysV
+  ansible.builtin.shell: /etc/rc.d/rc.nginx restart
+  when: (ansible_facts['os_family'] == "Slackware") or
+        (ansible_facts['os_family'] == "FreeBSD")
+
+- name: Reload ApacheSysV
+  ansible.builtin.shell: /etc/rc.d/rc.httpd restart
+  when: (ansible_facts['distribution'] == "Slackware") or
+        (ansible_facts['distribution'] == "FreeBSD")
