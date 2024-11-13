@@ -14,11 +14,11 @@
         (ansible_facts['os_family'] == "Debian")
 
 - name: Reload NginxSysV
-  ansible.builtin.shell: /etc/rc.d/rc.nginx restart
+  ansible.builtin.command: /etc/rc.d/rc.nginx restart
   when: (ansible_facts['os_family'] == "Slackware") or
         (ansible_facts['os_family'] == "FreeBSD")
 
 - name: Reload ApacheSysV
-  ansible.builtin.shell: /etc/rc.d/rc.httpd restart
+  ansible.builtin.command: /etc/rc.d/rc.httpd restart
   when: (ansible_facts['distribution'] == "Slackware") or
         (ansible_facts['distribution'] == "FreeBSD")
