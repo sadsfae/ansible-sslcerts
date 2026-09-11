@@ -4,48 +4,48 @@
   set_fact:
     www_hostname: "{{ ansible_nodename }}"
 
-# Optional wildcard seeding (enabled with use_seed_file_if_absent).
-# If a host lacks a host-specific certificate/key, seed it on the control
-# node from the wildcard files named by wildcard_cert_file/wildcard_key_file.
-# Explicit per-host files are never overwritten.
+# Optional wildcard fallback (enabled with use_seed_file_if_absent, defined
+# in this role's defaults/main.yml).  Per-host certificate/key files are
+# named after the system hostname (www_hostname = ansible_nodename) and
+# live in this role's files/ directory.  When enabled and a per-host file
+# is absent, the wildcard files named by wildcard_cert_file/wildcard_key_file
+# are used directly as the copy source; nothing is written into files/.
+# Per-host files always take precedence, and a host that has only one of the
+# pair fails loudly rather than deploying a mismatched certificate.
 - name: Check local host certificate
   ansible.builtin.stat:
     path: "{{ role_path }}/files/{{ www_hostname }}.pem"
   delegate_to: localhost
   register: host_cert_pem
-  when: use_seed_file_if_absent | bool
+  when:
+    - use_seed_file_if_absent | default(false) | bool
+    - "'apache' in group_names or 'nginx' in group_names"
 
 - name: Check local host key
   ansible.builtin.stat:
     path: "{{ role_path }}/files/{{ www_hostname }}.key"
   delegate_to: localhost
   register: host_cert_key
-  when: use_seed_file_if_absent | bool
-
-- name: Seed local host certificate from wildcard certificate
-  ansible.builtin.copy:
-    src: "{{ role_path }}/files/{{ wildcard_cert_file }}"
-    dest: "{{ role_path }}/files/{{ www_hostname }}.pem"
-    mode: '0600'
-  delegate_to: localhost
   when:
-    - use_seed_file_if_absent | bool
-    - not host_cert_pem.stat.exists
+    - use_seed_file_if_absent | default(false) | bool
+    - "'apache' in group_names or 'nginx' in group_names"
 
-- name: Seed local host key from wildcard key
-  ansible.builtin.copy:
-    src: "{{ role_path }}/files/{{ wildcard_key_file }}"
-    dest: "{{ role_path }}/files/{{ www_hostname }}.key"
-    mode: '0600'
-  delegate_to: localhost
+- name: Fail on half a certificate/key pair
+  ansible.builtin.fail:
+    msg: "{{ www_hostname }} has only one of {{ role_path }}/files/{{ www_hostname }}.{pem,key}; with use_seed_file_if_absent enabled, provide both files or remove both."
   when:
-    - use_seed_file_if_absent | bool
-    - not host_cert_key.stat.exists
+    - use_seed_file_if_absent | default(false) | bool
+    - "'apache' in group_names or 'nginx' in group_names"
+    - (host_cert_pem.stat.exists | default(false) | bool) != (host_cert_key.stat.exists | default(false) | bool)
 
+# The copy tasks use the per-host file when it exists (or when wildcard
+# fallback is off, preserving the original loud failure on a missing file);
+# otherwise the wildcard file is copied directly to the per-host destination
+# name.  Re-running picks up wildcard renewals automatically.
 # Apache Webserver
 - name: Replacing Apache Certificates
   ansible.builtin.copy:
-    src: "{{ www_hostname }}.pem"
+    src: "{{ (www_hostname ~ '.pem') if ((not (use_seed_file_if_absent | default(false) | bool)) or host_cert_pem.stat.exists) else wildcard_cert_file }}"
     dest: "{{ apache_cert_path }}"
     owner: "{{ sslcerts_owner | default('root') }}"
     group: "{{ sslcerts_group | default('root') }}"
@@ -55,7 +55,7 @@
 
 - name: Replacing Apache Keys
   ansible.builtin.copy:
-    src: "{{ www_hostname }}.key"
+    src: "{{ (www_hostname ~ '.key') if ((not (use_seed_file_if_absent | default(false) | bool)) or host_cert_key.stat.exists) else wildcard_key_file }}"
     dest: "{{ apache_key_path }}"
     owner: "{{ sslcerts_owner | default('root') }}"
     group: "{{ sslcerts_group | default('root') }}"
@@ -69,7 +69,7 @@
 # Nginx Webserver
 - name: Replacing Nginx Certificates
   ansible.builtin.copy:
-    src: "{{ www_hostname }}.pem"
+    src: "{{ (www_hostname ~ '.pem') if ((not (use_seed_file_if_absent | default(false) | bool)) or host_cert_pem.stat.exists) else wildcard_cert_file }}"
     dest: "{{ nginx_cert_path }}"
     owner: "{{ sslcerts_owner | default('root') }}"
     group: "{{ sslcerts_group | default('root') }}"
@@ -79,7 +79,7 @@
 
 - name: Replacing Nginx Keys
   ansible.builtin.copy:
-    src: "{{ www_hostname }}.key"
+    src: "{{ (www_hostname ~ '.key') if ((not (use_seed_file_if_absent | default(false) | bool)) or host_cert_key.stat.exists) else wildcard_key_file }}"
     dest: "{{ nginx_key_path }}"
     owner: "{{ sslcerts_owner | default('root') }}"
     group: "{{ sslcerts_group | default('root') }}"

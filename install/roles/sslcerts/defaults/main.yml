@@ -1,0 +1,12 @@
+---
+# Wildcard fallback for hosts without a host-specific certificate/key.
+# When use_seed_file_if_absent is true and a host's <hostname>.pem/.key is
+# missing from this role's files/ directory, the wildcard files named below
+# are used directly as the copy source -- nothing is written into files/.
+# Per-host files always take precedence.  Files are named after the system
+# hostname (ansible_nodename), not the inventory name.  Default false keeps
+# the historical behavior: every host must have its own files and a missing
+# file fails loudly.
+use_seed_file_if_absent: false
+wildcard_cert_file: wildcard.pem
+wildcard_key_file: wildcard.key

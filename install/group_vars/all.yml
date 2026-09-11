@@ -5,13 +5,3 @@ nginx_cert_path: /etc/pki/tls/certs
 nginx_key_path: /etc/pki/tls/certs
 apache_cert_path: /etc/pki/tls/certs
 apache_key_path: /etc/pki/tls/private
-
-# Wildcard certificate seeding
-# When use_seed_file_if_absent is true, hosts that do not have a host-specific
-# <hostname>.pem or <hostname>.key in install/roles/sslcerts/files/ are seeded
-# on the control node from the files named by wildcard_cert_file/wildcard_key_file
-# (relative to install/roles/sslcerts/files/).  Default is false: every host must
-# have its own certificate/key files.
-use_seed_file_if_absent: false
-wildcard_cert_file: wildcard.pem
-wildcard_key_file: wildcard.key
