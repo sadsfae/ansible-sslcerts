@@ -32,7 +32,10 @@
 
 - name: Fail on half a certificate/key pair
   ansible.builtin.fail:
-    msg: "{{ www_hostname }} has only one of {{ role_path }}/files/{{ www_hostname }}.{pem,key}; with use_seed_file_if_absent enabled, provide both files or remove both."
+    msg: >-
+      {{ www_hostname }} has only one of
+      {{ role_path }}/files/{{ www_hostname }}.{pem,key};
+      with use_seed_file_if_absent enabled, provide both files or remove both.
   when:
     - use_seed_file_if_absent | default(false) | bool
     - "'apache' in group_names or 'nginx' in group_names"
@@ -46,7 +49,7 @@
 - name: Replacing Apache Certificates
   ansible.builtin.copy:
     src: "{{ (www_hostname ~ '.pem') if ((not (use_seed_file_if_absent | default(false) | bool)) or host_cert_pem.stat.exists) else wildcard_cert_file }}"
-    dest: "{{ apache_cert_path }}"
+    dest: "{{ apache_cert_path }}/{{ www_hostname }}.pem"
     owner: "{{ sslcerts_owner | default('root') }}"
     group: "{{ sslcerts_group | default('root') }}"
     backup: true
@@ -56,7 +59,7 @@
 - name: Replacing Apache Keys
   ansible.builtin.copy:
     src: "{{ (www_hostname ~ '.key') if ((not (use_seed_file_if_absent | default(false) | bool)) or host_cert_key.stat.exists) else wildcard_key_file }}"
-    dest: "{{ apache_key_path }}"
+    dest: "{{ apache_key_path }}/{{ www_hostname }}.key"
     owner: "{{ sslcerts_owner | default('root') }}"
     group: "{{ sslcerts_group | default('root') }}"
     backup: true
@@ -70,7 +73,7 @@
 - name: Replacing Nginx Certificates
   ansible.builtin.copy:
     src: "{{ (www_hostname ~ '.pem') if ((not (use_seed_file_if_absent | default(false) | bool)) or host_cert_pem.stat.exists) else wildcard_cert_file }}"
-    dest: "{{ nginx_cert_path }}"
+    dest: "{{ nginx_cert_path }}/{{ www_hostname }}.pem"
     owner: "{{ sslcerts_owner | default('root') }}"
     group: "{{ sslcerts_group | default('root') }}"
     backup: true
@@ -80,7 +83,7 @@
 - name: Replacing Nginx Keys
   ansible.builtin.copy:
     src: "{{ (www_hostname ~ '.key') if ((not (use_seed_file_if_absent | default(false) | bool)) or host_cert_key.stat.exists) else wildcard_key_file }}"
-    dest: "{{ nginx_key_path }}"
+    dest: "{{ nginx_key_path }}/{{ www_hostname }}.key"
     owner: "{{ sslcerts_owner | default('root') }}"
     group: "{{ sslcerts_group | default('root') }}"
     backup: true
