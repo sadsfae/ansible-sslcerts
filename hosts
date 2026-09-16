@@ -4,3 +4,4 @@ host-01
 [nginx]
 host-02
 host-03
+#host04        # rootless Podman nginx container host (see host_vars/host04.yaml)

@@ -10,3 +10,13 @@
 use_seed_file_if_absent: false
 wildcard_cert_file: wildcard.pem
 wildcard_key_file: wildcard.key
+
+# Optional command run instead of the system nginx service restart when nginx
+# keys change. Empty (default) keeps the historical behavior. Use for nginx
+# running in a rootless container, e.g.:
+#   systemctl --user --machine=web@.host restart qiip-nginx
+# The handler uses ansible.builtin.command (no shell): the value must be a
+# single command with arguments; pipes, && and redirects are not supported.
+# Note: the target container usually needs a restart (not a reload) so the
+# SELinux :Z label is re-applied to cert files written after container start.
+sslcerts_nginx_reload_command: ''
