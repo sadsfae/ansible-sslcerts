@@ -90,5 +90,6 @@
     mode: "{{ sslcerts_mode | default('0600') }}"
   notify:
     - Reload Nginx
+    - Reload Nginx Custom
     - Reload NginxSysV
   when: "'nginx' in group_names"
