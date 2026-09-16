@@ -3,8 +3,16 @@
   ansible.builtin.service:
     name: nginx
     state: restarted
-  when: (ansible_facts['os_family'] == "RedHat") or
-        (ansible_facts['os_family'] == "Debian")
+  when: not (sslcerts_nginx_reload_command | default('')) and
+        ((ansible_facts['os_family'] == "RedHat") or
+         (ansible_facts['os_family'] == "Debian"))
+
+- name: Reload Nginx Custom
+  # ansible.builtin.command is not shell-interpreted: the value must be a
+  # single command with arguments (pipes, &&, redirects are literal args and
+  # fail). Use the systemctl form shown in the README.
+  ansible.builtin.command: "{{ sslcerts_nginx_reload_command | default('') }}"
+  when: sslcerts_nginx_reload_command | default('')
 
 - name: Reload Apache
   ansible.builtin.service:
@@ -15,8 +23,9 @@
 
 - name: Reload NginxSysV
   ansible.builtin.command: /etc/rc.d/rc.nginx restart
-  when: (ansible_facts['os_family'] == "Slackware") or
-        (ansible_facts['os_family'] == "FreeBSD")
+  when: not (sslcerts_nginx_reload_command | default('')) and
+        ((ansible_facts['os_family'] == "Slackware") or
+         (ansible_facts['os_family'] == "FreeBSD"))
 
 - name: Reload ApacheSysV
   ansible.builtin.command: /etc/rc.d/rc.httpd restart

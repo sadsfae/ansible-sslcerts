@@ -1,0 +1,22 @@
+---
+# Example host_vars for nginx running in a rootless Podman container
+# (systemd user Quadlet), matching the commented "#host04" entry in the
+# hosts inventory. Copy to install/host_vars/<inventory_hostname>.yml
+# (the host name exactly as written in the hosts inventory) and adjust
+# values, and list the host under the [nginx] group - no new group is
+# needed; these vars select the container behavior. With them set, the role
+# copies the cert pair into the podman user's bind-mounted cert directory
+# and restarts the container's user unit instead of the system nginx
+# service. See README "Rootless container".
+sslcerts_owner: qiip
+sslcerts_group: qiip
+sslcerts_mode: "0600"
+nginx_cert_path: /home/qiip/.config/qiip-nginx/certs
+nginx_key_path: /home/qiip/.config/qiip-nginx/certs
+# Reload the container's unit on cert/key change (must be a single command
+# with arguments; the handler uses ansible.builtin.command, no shell operators).
+# Rootless podman (Quadlet user unit qiip-nginx.service):
+sslcerts_nginx_reload_command: systemctl --user --machine=qiip@.host restart qiip-nginx
+# Rootful podman (container running as root, system unit qiip-nginx.service) -
+# uncomment instead:
+# sslcerts_nginx_reload_command: systemctl restart qiip-nginx

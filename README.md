@@ -15,6 +15,7 @@ Simple Ansible playbook to replace Apache and Nginx SSL certificates
   - [Generate New Certificates](#generate-new-certificates)
   - [Using a Wildcard Certificate](#using-a-wildcard-certificate)
   - [Host-level Ownership and Mode Overrides](#host-level-ownership-and-mode-overrides)
+  - [Rootless Container (Podman)](#rootless-container-podman)
   - [Run the Playbook](#run-the-playbook)
 - [Notes](#notes)
 - [To Do](#to-do)
@@ -81,6 +82,50 @@ sslcerts_mode: '0640'
 
 * Any value you leave out falls back to the default (`root` / `root` / `0600`). The overrides apply to both the Apache and Nginx copy tasks for that single host; other hosts keep the defaults. Set the group by name — Ansible resolves it to the GID on each target, so the same override works across hosts with different GIDs.
 * `sslcerts_mode` applies to **both** the certificate and the key file, and per-host files are matched against the system hostname (`ansible_nodename`), not the inventory name.
+
+#### Rootless Container (Podman)
+* No new inventory group is needed: list the container host under the
+  existing `[nginx]` group in your `hosts` inventory (that group triggers the
+  nginx cert tasks). The same playbook command runs both kinds of host; a
+  host's `host_vars` file decides whether it behaves like a container. The
+  shipped `hosts` inventory shows this with a commented placeholder:
+
+```ini
+[nginx]
+host-02
+host-03
+#host04        # rootless Podman nginx container host (see host_vars/host04.yaml)
+```
+
+* For nginx running in a rootless Podman container (systemd user Quadlet),
+  override the cert destination, ownership and reload per host with
+  `install/host_vars/<inventory_hostname>.yml` (the host name exactly as
+  written in your `hosts` inventory). A shipped example is
+  `install/host_vars/host04.yaml`:
+
+```yaml
+sslcerts_owner: qiip
+sslcerts_group: qiip
+sslcerts_mode: "0600"
+nginx_cert_path: /home/qiip/.config/qiip-nginx/certs
+nginx_key_path: /home/qiip/.config/qiip-nginx/certs
+sslcerts_nginx_reload_command: systemctl --user --machine=qiip@.host restart qiip-nginx
+```
+
+* The cert dir must be the bind mount source the container mounts at
+  `/etc/pki/tls/certs`, owned by the podman user: a rootless container cannot
+  read root:root `0600` files.
+* Quote `sslcerts_mode`: unquoted YAML `0600` is octal and renders as a
+  decimal integer.
+* `sslcerts_nginx_reload_command` is empty by default and restarts the system
+  `nginx` service (historical behavior). When set, it runs instead, which is
+  how a container's user unit gets restarted. The value must be a single
+  command with arguments (`ansible.builtin.command`, no shell): pipes, `&&`
+  and redirects are not supported. Prefer a restart over a reload:
+  the container re-applies the SELinux `:Z` label to cert files written after
+  the container started.
+* Role files are still named after `ansible_nodename` (the system hostname);
+  keep it equal to the FQDN the webserver expects.
 
 #### Run the Playbook
 
